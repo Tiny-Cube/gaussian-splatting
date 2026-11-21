@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+        />
+        <title>3D Gaussian Splatting 作品集 · Tiny-Cube</title>
+        <style>
+            :root {
+                --bg: #0e1013;
+                --card: #161a20;
+                --border: #262b33;
+                --text: #e6e8eb;
+                --muted: #9aa3af;
+                --accent: #5b8cff;
+                --accent-hi: #7ba3ff;
+            }
+            * { box-sizing: border-box; }
+            html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; }
+            .wrap { max-width: 1100px; margin: 0 auto; padding: 32px 20px 72px; }
+            header { margin-bottom: 28px; }
+            h1 { font-size: 28px; margin: 0 0 8px; font-weight: 700; }
+            .sub { color: var(--muted); font-size: 15px; line-height: 1.6; }
+            .sub code { background: #20242b; padding: 2px 6px; border-radius: 5px; font-size: 13px; }
+
+            .row { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+            .card {
+                background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+                overflow: hidden; cursor: pointer; transition: transform .15s ease, border-color .15s ease;
+                display: flex; flex-direction: column; color: var(--text); text-decoration: none;
+            }
+            .card:hover h3 { color: var(--accent-hi); }
+            .card:hover { transform: translateY(-3px); border-color: var(--accent); }
+            .thumb { aspect-ratio: 4/3; background: #0a0c0f; background-image:
+                radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px); background-size: 14px 14px;
+                display: flex; align-items: center; justify-content: center; position: relative; }
+            .thumb::after { content: "◈"; font-size: 42px; color: #2a3442; }
+            .card:hover .thumb::after { color: var(--accent); }
+            .card-body { padding: 14px 16px; }
+            .card-body h3 { margin: 0 0 4px; font-size: 16px; }
+            .card-body p { margin: 0; color: var(--muted); font-size: 13px; }
+            .card-body .ext { display: inline-block; background: #20242b; padding: 2px 8px; border-radius: 20px; font-size: 12px; margin-top: 8px; color: var(--accent-hi); }
+
+            .empty {
+                border: 1px dashed var(--border); border-radius: 12px; padding: 44px 24px;
+                text-align: center; color: var(--muted); line-height: 1.8;
+            }
+            .empty code { background: #20242b; padding: 2px 6px; border-radius: 5px; }
+            footer { margin-top: 44px; color: var(--muted); font-size: 13px; text-align: center; }
+            footer a { color: var(--accent-hi); }
+        </style>
+    </head>
+    <body>
+        <div class="wrap">
+            <header>
+                <h1>🧊 3D Gaussian Splatting 作品集</h1>
+                <p class="sub">
+                    点击卡片即可在浏览器中实时查看、旋转、缩放模型（支持 <code>.ply</code> /
+                    <code>.sog</code> / <code>.spz</code>，由
+                    <a href="https://github.com/playcanvas/supersplat-viewer" target="_blank" rel="noopener" style="color:var(--accent-hi)">SuperSplat Viewer</a> 驱动）。
+                </p>
+            </header>
+
+            <div class="row" id="grid"></div>
+
+            <footer>
+                模型文件位于 <code>assets/models/</code>，登记列表为 <code>assets/models/_list.json</code>。
+                · <a href="https://github.com/Tiny-Cube/gaussian-splatting" target="_blank" rel="noopener">GitHub 仓库</a>
+            </footer>
+        </div>
+
+        <script type="module">
+            const grid = document.getElementById('grid');
+
+            async function loadList() {
+                try {
+                    const res = await fetch('./assets/models/_list.json?t=' + Date.now());
+                    const data = await res.json();
+                    return (data.models || []).filter((m) => m && m.file);
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            function extOf(file) {
+                const i = file.lastIndexOf('.');
+                return i >= 0 ? file.slice(i).toLowerCase() : '';
+            }
+
+            function cardHTML(m) {
+                const ext = extOf(m.file);
+                const viewLink = `./model-viewer/index.html?content=../assets/models/${encodeURIComponent(m.file)}&settings=./settings.json`;
+                return `
+                    <a class="card" href="${viewLink}" target="_blank" rel="noopener" data-file="${m.file}">
+                        <div class="thumb"></div>
+                        <div class="card-body">
+                            <h3>${(m.name || m.file).replace(/</g, '&lt;')}</h3>
+                            <p>${(m.note || '').replace(/</g, '&lt;')}</p>
+                            <span class="ext">${ext || '未知格式'}</span>
+                        </div>
+                    </a>`;
+            }
+
+            const models = await loadList();
+            if (models.length === 0) {
+                grid.innerHTML = `<div class="empty">
+                    还没有登记任何模型。<br/>
+                    请把模型文件放到 <code>assets/models/</code>，然后在
+                    <code>assets/models/_list.json</code> 里登记，形如：
+                    <br/><br/><code>{ "models": [{ "file": "my-scene.spz", "name": "我的场景", "note": "备注 (可选)" }] }</code>
+                </div>`;
+            } else {
+                grid.innerHTML = models.map(cardHTML).join('');
+            }
+        </script>
+    </body>
+</html>
