@@ -1,9 +1,15 @@
 {
     "models": [
         {
-            "file": "edit.sog",
-            "name": "edit",
+            "file": "001.sog",
+            "name": "001",
+            "note": "3D Gaussian Splatting 模型"
+        },
+        {
+            "file": "002.sog",
+            "name": "002",
             "note": "3D Gaussian Splatting 模型"
         }
+
     ]
 }
