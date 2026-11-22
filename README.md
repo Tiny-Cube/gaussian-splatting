@@ -62,6 +62,7 @@ gaussian-splatting/
    git add .
    git commit -m "add 3D Gaussian splatting showcase"
    git push origin main
+   # git add . && git commit -m "add model" && git push
    ```
    然后在仓库 **Settings → Pages → Source / Build and deployment** 里选择
    **Deploy from a branch → 分支 `main` → 目录 `/ (root)`**，保存。
@@ -71,6 +72,7 @@ gaussian-splatting/
 
 - 想全部放 `main` 根目录：把上面这些文件直接放在仓库根目录即可。
 - 想独立成页面、不动代码分支：把本目录内容放到 `docs/` 子目录，然后 Pages 源选**分支 `main` → 目录 `/docs`**。
+
 
 ## 🧠 加一个查看指定文件直达链接
 
